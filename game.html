@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tebak Gambar | Game Edukasi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --glass: rgba(255, 255, 255, 0.15);
+            --neon-glow: 0 0 10px rgba(76, 201, 240, 0.7);
+            --error: #ef233c;
+            --success: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a1a2e, #1a3a6a);
+            min-height: 100vh;
+            color: var(--light);
+            touch-action: manipulation;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                0 0 15px var(--primary),
+                inset 0 0 5px white;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+        }
+        
+        .back-button {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main Content */
+        .container {
+            margin-top: 80px;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+        
+        .header-section {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.1), transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        h2 {
+            font-size: 18px;
+            margin: 15px 0 10px;
+            font-weight: 500;
+            color: var(--accent);
+        }
+        
+        /* Game Container */
+        .game-container {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .option-btn.correct {
+            background: var(--success);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+        }
+        
+        .option-btn.wrong {
+            background: var(--error);
+            box-shadow: 0 0 15px rgba(239, 35, 60, 0.5);
+        }
+        
+        /* Score Panel */
+        .score-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .score-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        /* Background Elements */
+        .bg-elements {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary), transparent 70%);
+            opacity: 0.1;
+            filter: blur(40px);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .bg-element:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: -50px;
+            left: -50px;
+            animation-delay: 0s;
+        }
+        
+        .bg-element:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: -30px;
+            right: -30px;
+            animation-delay: 2.5s;
+        }
+        
+        .bg-element:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 30%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10px, 10px); }
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 25px rgba(76, 201, 240, 0.5);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 30px rgba(76, 201, 240, 0.7);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .container {
+                margin-top: 70px;
+                padding: 10px;
+            }
+            
+            .header-section {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 16px;
+            }
+            
+            .image-container {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">🎮</div>
+            <span class="logo-text">TEBAK GAMBAR</span>
+        </div>
+        <a href="index.html" class="back-button">
+            ← Beranda
+        </a>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <section class="header-section">
+            <h1>Tebak Gambar Edukasi</h1>
+            <p>Tebak gambar di bawah ini dan pilih jawaban yang benar!</p>
+        </section>
+        
+        <!-- Score Panel -->
+        <div class="score-panel">
+            <div class="score-item">
+                <div class="score-label">Level</div>
+                <div class="score-value" id="level-display">1/10</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Skor</div>
+                <div class="score-value" id="score-display">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Nyawa</div>
+                <div class="score-value" id="lives-display">❤️❤️❤️</div>
+            </div>
+        </div>
+        
+        <!-- Game Container -->
+        <div class="game-container" id="game-container">
+            <div class="image-container">
+                <img src="" alt="Gambar tebakan" id="quiz-image">
+            </div>
+            
+            <h2 id="question-text">Apa yang ada dalam gambar ini?</h2>
+            
+            <div class="options-container" id="options-container">
+                <!-- Options will be inserted here by JavaScript -->
+            </div>
+            
+            <button class="btn btn-primary" id="next-btn" style="display: none;">Lanjut</button>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <a href="index.html" class="fab">🏠</a>
+    </div>
+    
+    <script>
+        // Game Data - 10 Soal Tebak Gambar
+        const quizData = [
+            {
+                image: "https://i.imgur.com/Jn3yF9j.jpg", // Gambar Apel
+                question: "Buah apakah ini?",
+                options: ["Pisang", "Apel", "Jeruk", "Anggur"],
+                answer: 1
+            },
+            {
+                image: "https://i.imgur.com/3ZQ4Z0j.jpg", // Gambar Mobil
+                question: "Kendaraan apakah ini?",
+                options: ["Pesawat", "Kereta", "Mobil", "Sepeda"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/5R5W5Yj.jpg", // Gambar Anjing
+                question: "Hewan apakah ini?",
+                options: ["Kucing", "Kelinci", "Anjing", "Burung"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/7S8W9Yj.jpg", // Gambar Buku
+                question: "Benda apakah ini?",
+                options: ["Pensil", "Buku", "Penggaris", "Penghapus"],
+                answer: 1
+            },
+            {
+                image: "https://i.imgur.com/9T0U1Yj.jpg", // Gambar Pohon
+                question: "Apa nama tumbuhan ini?",
+                options: ["Rumput", "Bunga", "Pohon", "Semak"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/2X3Y4Zj.jpg", // Gambar Sepatu
+                question: "Barang apakah ini?",
+                options: ["Topi", "Sepatu", "Kaos Kaki", "Tas"],
+                answer: 1
+            },
+            {
+                image: "https://i.imgur.com/1A2B3Cj.jpg", // Gambar Telepon
+                question: "Alat komunikasi apakah ini?",
+                options: ["Radio", "Televisi", "Telepon", "Komputer"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/4D5E6Fj.jpg", // Gambar Jam
+                question: "Benda untuk melihat apakah ini?",
+                options: ["Kalender", "Termometer", "Jam", "Kompas"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/7G8H9Ij.jpg", // Gambar Pensil
+                question: "Alat tulis apakah ini?",
+                options: ["Pulpen", "Spidol", "Pensil", "Kuas"],
+                answer: 2
+            },
+            {
+                image: "https://i.imgur.com/0J1K2Lj.jpg", // Gambar Topi
+                question: "Aksesoris apakah ini?",
+                options: ["Topi", "Syal", "Sarung Tangan", "Kacamata"],
+                answer: 0
+            }
+        ];
+
+        // Game State
+        let currentQuestion = 0;
+        let score = 0;
+        let lives = 3;
+        let selectedOption = null;
+
+        // DOM Elements
+        let quizImage = document.getElementById('quiz-image');
+        let questionText = document.getElementById('question-text');
+        let optionsContainer = document.getElementById('options-container');
+        let nextBtn = document.getElementById('next-btn');
+        let scoreDisplay = document.getElementById('score-display');
+        let levelDisplay = document.getElementById('level-display');
+        let livesDisplay = document.getElementById('lives-display');
+        let gameContainer = document.getElementById('game-container');
+
+        // Initialize Game
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            quizImage.src = question.image;
+            quizImage.alt = "Gambar untuk: " + question.question;
+            questionText.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.className = 'option-btn';
+                button.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(button);
+            });
+            
+            levelDisplay.textContent = `${currentQuestion + 1}/${quizData.length}`;
+            nextBtn.style.display = 'none';
+            selectedOption = null;
+        }
+
+        // Select Option
+        function selectOption(index) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = index;
+            const options = document.querySelectorAll('.option-btn');
+            const correctIndex = quizData[currentQuestion].answer;
+            
+            // Tampilkan feedback visual
+            options.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === index && index !== correctIndex) {
+                    btn.classList.add('wrong');
+                }
+                btn.style.pointerEvents = 'none';
+            });
+            
+            // Update skor dan nyawa
+            if (index === correctIndex) {
+                score += 10;
+                scoreDisplay.textContent = score;
+            } else {
+                lives--;
+                livesDisplay.textContent = '❤️'.repeat(lives);
+                
+                // Game over jika nyawa habis
+                if (lives <= 0) {
+                    setTimeout(() => endGame(false), 1000);
+                    return;
+                }
+            }
+            
+            nextBtn.style.display = 'block';
+        }
+
+        // Next Question
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                endGame(true);
+            }
+        }
+
+        // End Game
+        function endGame(isComplete) {
+            let message = isComplete ? 
+                `Selamat! Anda menyelesaikan semua soal!` : 
+                `Game Over! Nyawa Anda habis.`;
+            
+            gameContainer.innerHTML = `
+                <h2>${isComplete ? '🎉 SELAMAT! 🎉' : '😢 GAME OVER'}</h2>
+                <p>${message}</p>
+                <p>Skor akhir Anda: <strong>${score}</strong></p>
+                <button class="btn btn-primary" id="restart-btn">Main Lagi</button>
+            `;
+            
+            // Pasang event listener untuk tombol restart
+            document.getElementById('restart-btn').addEventListener('click', resetGame);
+        }
+
+        // Reset Game - VERSI FIXED
+        function resetGame() {
+            // Reset state game
+            currentQuestion = 0;
+            score = 0;
+            lives = 3;
+            
+            // Update tampilan score
+            scoreDisplay.textContent = score;
+            livesDisplay.textContent = '❤️❤️❤️';
+            
+            // Kembalikan struktur game container ke awal
+            gameContainer.innerHTML = `
+                <div class="image-container">
+                    <img src="" alt="Gambar tebakan" id="quiz-image">
+                </div>
+                <h2 id="question-text">Apa yang ada dalam gambar ini?</h2>
+                <div class="options-container" id="options-container"></div>
+                <button class="btn btn-primary" id="next-btn" style="display: none;">Lanjut</button>
+            `;
+            
+            // Re-inisialisasi referensi elemen DOM
+            quizImage = document.getElementById('quiz-image');
+            questionText = document.getElementById('question-text');
+            optionsContainer = document.getElementById('options-container');
+            nextBtn = document.getElementById('next-btn');
+            
+            // Pasang kembali event listener
+            nextBtn.addEventListener('click', nextQuestion);
+            
+            // Muat soal pertama
+            loadQuestion();
+        }
+
+        // Initialize Game
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ukuran font dinamis
+            const baseFontSize = window.innerWidth < 400 ? 14 : 16;
+            document.documentElement.style.fontSize = baseFontSize + 'px';
+            
+            // Touch feedback untuk tombol
+            const buttons = document.querySelectorAll('.btn, .back-button');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+            
+            // Mencegah zoom
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Load first question
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
