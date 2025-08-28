@@ -3,376 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Learning Platform</title>
+    <title>GitHub Style AI Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
-        
-        :root {
-            --primary: #5dadec;
-            --accent: #00f7ff;
-            --light: #e6f7ff;
-            --dark: #1a3a6a;
-            --glass: rgba(255, 255, 255, 0.15);
-            --neon-glow: 0 0 10px var(--accent);
-            --error: #ff6b6b;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
+        :root {
+            --github-black: #0d1117;
+            --github-dark: #161b22;
+            --github-border: #30363d;
+            --github-blue: #58a6ff;
+            --github-text: #f0f6fc;
+            --github-gray: #8b949e;
+            --ai-message-bg: #161b22;
+            --user-message-bg: #0d4663;
+        }
+
         body {
-            background: linear-gradient(135deg, #0a1a2e, #1a3a6a);
+            background-color: var(--github-black);
+            color: var(--github-text);
             height: 100vh;
-            overflow: hidden;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--light);
-            perspective: 1000px;
+            flex-direction: column;
         }
-        
-        .bg-elements {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        
-        .bg-element {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--primary), transparent 70%);
-            opacity: 0.15;
-            filter: blur(40px);
-            animation: float 25s infinite linear;
-        }
-        
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(50vw, 25vh) rotate(90deg); }
-            50% { transform: translate(30vw, 60vh) rotate(180deg); }
-            75% { transform: translate(-20vw, 40vh) rotate(270deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
-        }
-        
-        .main-container {
-            width: 420px;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transform-style: preserve-3d;
-            animation: float-card 8s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        @keyframes float-card {
-            0%, 100% { transform: translateY(0) rotateY(0deg); }
-            50% { transform: translateY(-15px) rotateY(5deg); }
-        }
-        
-        .main-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                transparent,
-                transparent,
-                transparent,
-                var(--accent),
-                transparent,
-                transparent,
-                transparent
-            );
-            transform: rotate(30deg);
-            animation: shine 8s infinite;
-            opacity: 0.3;
-        }
-        
+
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
-            background: var(--primary);
-            border-radius: 50%;
+            background-color: var(--github-dark);
+            padding: 16px;
+            border-bottom: 1px solid var(--github-border);
             display: flex;
-            justify-content: center;
             align-items: center;
-            box-shadow: 
-                0 0 20px var(--primary),
-                inset 0 0 10px white;
-            animation: pulse 3s infinite alternate;
+            justify-content: space-between;
         }
-        
-        .logo::after {
-            content: '🕹️';
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 20px var(--primary); }
-            100% { transform: scale(1.05); box-shadow: 0 0 30px var(--primary); }
-        }
-        
-        h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 14px;
-            opacity: 0.8;
-            letter-spacing: 1px;
-        }
-        
-        .menu-group {
-            margin-bottom: 25px;
-        }
-        
-        .menu-item {
-            width: 100%;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--accent);
-            box-shadow: var(--neon-glow);
-            transform: translateY(-3px);
-        }
-        
-        .menu-item:active {
-            transform: translateY(0);
-        }
-        
-        .menu-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: 0.5s;
-            z-index: -1;
-        }
-        
-        .menu-item:hover::before {
-            left: 100%;
-        }
-        
-        .login-form {
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .input-group {
+
+        .logo {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .input-group label {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        
-        .input-group input {
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: var(--neon-glow);
-        }
-        
-        .error-message {
-            color: var(--error);
-            font-size: 12px;
-            height: 14px;
-            margin-top: -5px;
-            text-align: center;
-        }
-        
-        .action-buttons {
-            display: flex;
+            align-items: center;
             gap: 10px;
         }
-        
-        .action-buttons button {
+
+        .logo i {
+            color: var(--github-blue);
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .main-container {
+            display: flex;
             flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .login-btn {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-        }
-        
-        .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-        }
-        
-        .action-buttons button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            z-index: -1;
         }
-        
-        .circles li {
-            position: absolute;
-            display: block;
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--github-dark);
+            border-right: 1px solid var(--github-border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-list {
             list-style: none;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: animate 25s linear infinite;
-            bottom: -150px;
+            margin-top: 20px;
         }
-        
-        @keyframes animate {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-                opacity: 0;
-            }
+
+        .chat-list li {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        @media (max-width: 480px) {
-            .main-container {
-                width: 90%;
-                padding: 30px;
+
+        .chat-list li:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-list li i {
+            color: var(--github-gray);
+        }
+
+        .new-chat-btn {
+            background-color: var(--github-blue);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 16px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .ai-message {
+            background-color: var(--ai-message-bg);
+            border: 1px solid var(--github-border);
+            align-self: flex-start;
+        }
+
+        .user-message {
+            background-color: var(--user-message-bg);
+            align-self: flex-end;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .message-header i {
+            margin-right: 8px;
+        }
+
+        .ai-message .message-header {
+            color: var(--github-blue);
+        }
+
+        .input-container {
+            padding: 16px;
+            border-top: 1px solid var(--github-border);
+            background-color: var(--github-dark);
+            display: flex;
+            gap: 12px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid var(--github-border);
+            background-color: var(--github-black);
+            color: var(--github-text);
+            resize: none;
+            height: 50px;
+            max-height: 150px;
+        }
+
+        .send-btn {
+            background-color: var(--github-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Responsiveness for mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
             }
             
-            .menu-item {
-                padding: 12px 15px;
-                font-size: 14px;
+            .message {
+                max-width: 90%;
             }
+            
+            .header {
+                padding: 12px;
+            }
+            
+            .logo h1 {
+                font-size: 18px;
+            }
+        }
+
+        /* Loading animation */
+        .typing-animation {
+            display: flex;
+            padding: 10px;
+        }
+
+        .typing-animation span {
+            height: 8px;
+            width: 8px;
+            background: var(--github-gray);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: typing 1s linear infinite;
+        }
+
+        .typing-animation span:nth-child(2) {
+            animation-delay: 0.2s;
+            background: var(--github-blue);
+        }
+
+        .typing-animation span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--github-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--github-border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--github-gray);
         }
     </style>
 </head>
 <body>
-    <div class="bg-elements">
-        <div class="bg-element" style="width: 500px; height: 500px; top: -100px; left: -100px;"></div>
-        <div class="bg-element" style="width: 300px; height: 300px; bottom: -50px; right: -50px;"></div>
+    <div class="header">
+        <div class="logo">
+            <i class="fab fa-github"></i>
+            <h1>GitHub AI Assistant</h1>
+        </div>
     </div>
-    
-    <ul class="circles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-    
+
     <div class="main-container">
-        <div class="header">
-            <div class="logo"></div>
-            <h1>GAMING PLATFORM</h1>
-            <p class="subtitle">PILIH GAME ANDA</p>
+        <div class="sidebar">
+            <button class="new-chat-btn" id="newChatBtn">
+                <i class="fas fa-plus"></i> Chat Baru
+            </button>
+            <div class="chat-history">
+                <h3>Riwayat Percakapan</h3>
+                <ul class="chat-list">
+                    <li><i class="fas fa-comment"></i> Bantuan coding Python</li>
+                    <li><i class="fas fa-comment"></i> Penjelasan GitHub Actions</li>
+                    <li><i class="fas fa-comment"></i> Bug fixing JavaScript</li>
+                </ul>
+            </div>
         </div>
-        
-        <div class="menu-group" id="roleSelection">
-            <div class="menu-item" onclick="location.href='game.html'">TEBAK GAMBAR</div>
+
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message ai-message">
+                    <div class="message-header">
+                        <i class="fas fa-robot"></i> AI Assistant
+                    </div>
+                    <div class="message-content">
+                        Halo! Saya asisten AI GitHub. Saya di sini untuk membantu Anda dengan pertanyaan tentang coding, GitHub, atau topik teknis lainnya. Apa yang bisa saya bantu?
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <textarea class="message-input" id="messageInput" placeholder="Ketik pesan Anda di sini..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
-    
+
     <script>
-        // Floating circles animation
-        const circles = document.querySelectorAll('.circles li');
-        circles.forEach((circle, index) => {
-            circle.style.left = `${Math.random() * 100}%`;
-            circle.style.width = `${Math.random() * 20 + 10}px`;
-            circle.style.height = circle.style.width;
-            circle.style.animationDelay = `${Math.random() * 5}s`;
-            circle.style.animationDuration = `${Math.random() * 20 + 10}s`;
-        });
-        
-        // Ripple effect
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                ripple.style.left = `${e.offsetX}px`;
-                ripple.style.top = `${e.offsetY}px`;
-                this.appendChild(ripple);
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const messagesContainer = document.getElementById('messages');
+            const newChatBtn = document.getElementById('newChatBtn');
+            
+            // API configuration
+            const API_KEY = 'sk-uEco8C7Wk9RVnnf9jOcYDHPzLiEYCpaRN5tDM1pNYpmVlpf9';
+            const API_HOST = 'https://api.chatanywhere.org';
+            
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+            
+            // Send message function
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
                 
-                setTimeout(() => {
-                    ripple.remove();
-                }, 1000);
+                // Add user message to chat
+                addMessage(message, 'user');
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                
+                // Show typing animation
+                showTypingAnimation();
+                
+                // Send message to API
+                fetchAIResponse(message);
+            }
+            
+            // Add message to chat
+            function addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+                
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                messageHeader.innerHTML = sender === 'ai' 
+                    ? '<i class="fas fa-robot"></i> AI Assistant' 
+                    : '<i class="fas fa-user"></i> Anda';
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.textContent = content;
+                
+                messageDiv.appendChild(messageHeader);
+                messageDiv.appendChild(messageContent);
+                
+                messagesContainer.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Show typing animation
+            function showTypingAnimation() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message ai-message typing-animation-container';
+                typingDiv.id = 'typingAnimation';
+                
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                messageHeader.innerHTML = '<i class="fas fa-robot"></i> AI Assistant';
+                
+                const typingAnimation = document.createElement('div');
+                typingAnimation.className = 'typing-animation';
+                typingAnimation.innerHTML = '<span></span><span></span><span></span>';
+                
+                typingDiv.appendChild(messageHeader);
+                typingDiv.appendChild(typingAnimation);
+                
+                messagesContainer.appendChild(typingDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Remove typing animation
+            function removeTypingAnimation() {
+                const typingElement = document.getElementById('typingAnimation');
+                if (typingElement) {
+                    typingElement.remove();
+                }
+            }
+            
+            // Fetch AI response
+            async function fetchAIResponse(userMessage) {
+                try {
+                    const response = await fetch(`${API_HOST}/v1/chat/completions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: "gpt-3.5-turbo",
+                            messages: [
+                                {
+                                    role: "system",
+                                    content: "Anda adalah asisten AI yang membantu dengan pertanyaan coding, GitHub, dan topik teknis. Berikan jawaban yang jelas dan informatif."
+                                },
+                                {
+                                    role: "user",
+                                    content: userMessage
+                                }
+                            ],
+                            temperature: 0.7
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+                    
+                    // Remove typing animation and add AI response
+                    removeTypingAnimation();
+                    addMessage(aiResponse, 'ai');
+                    
+                } catch (error) {
+                    console.error('Error fetching AI response:', error);
+                    removeTypingAnimation();
+                    addMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
+                }
+            }
+            
+            // Event listeners
+            sendBtn.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            newChatBtn.addEventListener('click', function() {
+                // Clear chat but keep the first AI message
+                while (messagesContainer.children.length > 1) {
+                    messagesContainer.removeChild(messagesContainer.lastChild);
+                }
             });
         });
     </script>
