@@ -3,58 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Style AI Chat</title>
+    <title>Shiiro AI - Asisten Cerdas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         :root {
             --github-black: #0d1117;
             --github-dark: #161b22;
+            --github-darker: #0d1117;
             --github-border: #30363d;
             --github-blue: #58a6ff;
+            --github-blue-light: #79c0ff;
             --github-text: #f0f6fc;
-            --github-gray: #8b949e;
+            --github-text-secondary: #8b949e;
             --ai-message-bg: #161b22;
-            --user-message-bg: #0d4663;
+            --user-message-bg: #1c3b53;
+            --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #2ea043 100%);
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --transition-speed: 0.3s;
+            
+            /* Light mode variables - default to dark mode values */
+            --bg-primary: var(--github-black);
+            --bg-secondary: var(--github-dark);
+            --bg-tertiary: var(--github-darker);
+            --text-primary: var(--github-text);
+            --text-secondary: var(--github-text-secondary);
+            --border-color: var(--github-border);
+            --ai-bubble: var(--ai-message-bg);
+            --user-bubble: var(--user-message-bg);
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --bg-tertiary: #f6f8fa;
+            --text-primary: #24292f;
+            --text-secondary: #57606a;
+            --border-color: #d0d7de;
+            --ai-bubble: #f6f8fa;
+            --user-bubble: #ddf4ff;
         }
 
         body {
-            background-color: var(--github-black);
-            color: var(--github-text);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
 
         .header {
-            background-color: var(--github-dark);
-            padding: 16px;
-            border-bottom: 1px solid var(--github-border);
+            background-color: var(--bg-secondary);
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: var(--header-height);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .logo i {
-            color: var(--github-blue);
-            font-size: 28px;
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(88, 166, 255, 0.3);
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 18px;
         }
 
         .logo h1 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--github-blue) 0%, var(--github-blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-btn {
+            background: rgba(128, 128, 128, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .header-btn:hover {
+            background: rgba(128, 128, 128, 0.15);
+            transform: translateY(-2px);
         }
 
         .main-container {
@@ -64,56 +138,100 @@
         }
 
         .sidebar {
-            width: 260px;
-            background-color: var(--github-dark);
-            border-right: 1px solid var(--github-border);
-            padding: 16px;
+            width: var(--sidebar-width);
+            background-color: var(--bg-tertiary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-        }
-
-        .chat-history {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .chat-list {
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        .chat-list li {
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .chat-list li:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .chat-list li i {
-            color: var(--github-gray);
+            transition: transform var(--transition-speed);
+            z-index: 5;
         }
 
         .new-chat-btn {
-            background-color: var(--github-blue);
+            background: var(--accent-gradient);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px 16px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-top: 20px;
-            font-weight: 500;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.25);
+            transition: all var(--transition-speed);
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(88, 166, 255, 0.4);
+        }
+
+        .new-chat-btn i {
+            font-size: 14px;
+        }
+
+        .chat-history {
+            margin-top: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-history h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-list {
+            list-style: none;
+        }
+
+        .chat-list li {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all var(--transition-speed);
+            border: 1px solid transparent;
+            color: var(--text-primary);
+        }
+
+        .chat-list li:hover {
+            background-color: rgba(88, 166, 255, 0.1);
+            border-color: rgba(88, 166, 255, 0.3);
+        }
+
+        .chat-list li.active {
+            background-color: rgba(88, 166, 255, 0.15);
+            border-color: rgba(88, 166, 255, 0.4);
+        }
+
+        .chat-list li i {
+            color: var(--github-blue);
+            font-size: 14px;
+        }
+
+        .chat-list li .chat-title {
+            flex: 1;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-list li .chat-date {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .chat-container {
@@ -121,40 +239,51 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         .messages {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(28, 59, 83, 0.03) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(88, 166, 255, 0.03) 0%, transparent 25%);
         }
 
         .message {
             max-width: 80%;
-            padding: 16px;
-            border-radius: 8px;
+            padding: 18px 20px;
+            border-radius: 16px;
             line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.4s ease-out;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .ai-message {
-            background-color: var(--ai-message-bg);
-            border: 1px solid var(--github-border);
+            background-color: var(--ai-bubble);
+            border: 1px solid var(--border-color);
             align-self: flex-start;
+            border-top-left-radius: 4px;
         }
 
         .user-message {
-            background-color: var(--user-message-bg);
+            background-color: var(--user-bubble);
             align-self: flex-end;
+            border-top-right-radius: 4px;
         }
 
         .message-header {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 500;
+            font-size: 14px;
+            color: var(--text-primary);
         }
 
         .message-header i {
@@ -165,42 +294,233 @@
             color: var(--github-blue);
         }
 
+        .user-message .message-header {
+            color: var(--github-blue-light);
+        }
+
+        .message-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .message-content pre {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+
+        .message-content code {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+
         .input-container {
-            padding: 16px;
-            border-top: 1px solid var(--github-border);
-            background-color: var(--github-dark);
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            backdrop-filter: blur(10px);
             display: flex;
             gap: 12px;
+            align-items: flex-end;
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
         }
 
         .message-input {
             flex: 1;
-            padding: 14px;
-            border-radius: 6px;
-            border: 1px solid var(--github-border);
-            background-color: var(--github-black);
-            color: var(--github-text);
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             resize: none;
-            height: 50px;
+            min-height: 50px;
             max-height: 150px;
+            font-size: 15px;
+            transition: all var(--transition-speed);
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--github-blue);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
         }
 
         .send-btn {
-            background-color: var(--github-blue);
+            background: var(--accent-gradient);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all var(--transition-speed);
+            box-shadow: 0 4px 10px rgba(88, 166, 255, 0.25);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(88, 166, 255, 0.4);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn i {
+            font-size: 18px;
+        }
+
+        /* Welcome screen */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            opacity: 1;
+            transition: opacity var(--transition-speed);
+        }
+
+        .welcome-logo {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 20px rgba(88, 166, 255, 0.3);
+        }
+
+        .welcome-logo i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--github-blue) 0%, var(--github-blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        .capability-card {
+            background-color: rgba(128, 128, 128, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all var(--transition-speed);
+        }
+
+        .capability-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--github-blue);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .capability-card i {
+            font-size: 24px;
+            color: var(--github-blue);
+            margin-bottom: 12px;
+        }
+
+        .capability-card h4 {
+            font-size: 15px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .capability-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Message actions */
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            background: rgba(128, 128, 128, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all var(--transition-speed);
+        }
+
+        .action-btn:hover {
+            background: rgba(128, 128, 128, 0.15);
+            color: var(--text-primary);
         }
 
         /* Responsiveness for mobile */
         @media (max-width: 768px) {
             .sidebar {
-                display: none;
+                position: absolute;
+                left: 0;
+                top: var(--header-height);
+                bottom: 0;
+                transform: translateX(-100%);
+                width: 80%;
+                max-width: 300px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
             }
             
             .message {
@@ -208,24 +528,58 @@
             }
             
             .header {
-                padding: 12px;
+                padding: 0 16px;
             }
             
-            .logo h1 {
-                font-size: 18px;
+            .capabilities-grid {
+                grid-template-columns: 1fr;
             }
+            
+            .menu-toggle {
+                display: flex;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 4;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+        }
+
+        /* Menu toggle button */
+        .menu-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(128, 128, 128, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            margin-right: 12px;
         }
 
         /* Loading animation */
         .typing-animation {
             display: flex;
-            padding: 10px;
+            padding: 10px 0;
         }
 
         .typing-animation span {
             height: 8px;
             width: 8px;
-            background: var(--github-gray);
+            background: var(--text-secondary);
             border-radius: 50%;
             margin-right: 5px;
             animation: typing 1s linear infinite;
@@ -249,56 +603,315 @@
             }
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--github-dark);
+            background: var(--bg-secondary);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--github-border);
-            border-radius: 3px;
+            background: var(--border-color);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--github-gray);
+            background: var(--github-blue);
+        }
+
+        /* Markdown styling */
+        .message-content h1, 
+        .message-content h2, 
+        .message-content h3 {
+            margin: 16px 0 8px 0;
+            color: var(--github-blue-light);
+        }
+
+        .message-content p {
+            margin-bottom: 12px;
+        }
+
+        .message-content ul, 
+        .message-content ol {
+            margin: 8px 0 12px 20px;
+        }
+
+        .message-content li {
+            margin-bottom: 4px;
+        }
+
+        .message-content blockquote {
+            border-left: 4px solid var(--github-blue);
+            padding-left: 16px;
+            margin: 12px 0;
+            color: var(--text-secondary);
+        }
+
+        .message-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+        }
+
+        .message-content th, 
+        .message-content td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .message-content th {
+            background-color: rgba(128, 128, 128, 0.05);
+        }
+
+        /* New UI Enhancements */
+        .ai-typing-indicator {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .ai-typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background-color: var(--github-blue);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .ai-typing-indicator span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .ai-typing-indicator span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .suggestion-chip {
+            background-color: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 18px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-chip:hover {
+            background-color: rgba(88, 166, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .ai-message .message-time {
+            text-align: left;
+        }
+
+        /* Enhanced animations */
+        .message {
+            transform-origin: center bottom;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .message.sending {
+            opacity: 0.8;
+            transform: scale(0.97);
+        }
+
+        .message.sent {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Improved dark/light mode transition */
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Better focus states for accessibility */
+        .header-btn:focus,
+        .action-btn:focus,
+        .send-btn:focus,
+        .new-chat-btn:focus {
+            outline: 2px solid var(--github-blue);
+            outline-offset: 2px;
+        }
+
+        /* Enhanced code block styling */
+        .message-content pre {
+            position: relative;
+            padding-top: 30px;
+        }
+
+        .message-content pre::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff5f56;
+            box-shadow: 20px 0 #ffbd2e, 40px 0 #27ca3f;
+        }
+
+        .message-content pre code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        /* Copy code button */
+        .copy-code-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(128, 128, 128, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-primary);
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .message-content pre:hover .copy-code-btn {
+            opacity: 1;
+        }
+
+        .copy-code-btn:hover {
+            background: rgba(128, 128, 128, 0.3);
         }
     </style>
 </head>
 <body>
+    <div class="overlay" id="overlay"></div>
+
     <div class="header">
         <div class="logo">
-            <i class="fas fa-robot"></i>
-            <h1>Shiiro Ai</h1>
+            <div class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="logo-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h1>Shiiro AI</h1>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
     </div>
 
     <div class="main-container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <button class="new-chat-btn" id="newChatBtn">
                 <i class="fas fa-plus"></i> Chat Baru
             </button>
             <div class="chat-history">
                 <h3>Riwayat Percakapan</h3>
                 <ul class="chat-list">
-                    <li><i class="fas fa-comment"></i> Bantuan coding Python</li>
-                    <li><i class="fas fa-comment"></i> Penjelasan GitHub Actions</li>
-                    <li><i class="fas fa-comment"></i> Bug fixing JavaScript</li>
+                    <li class="active">
+                        <i class="fas fa-comment"></i>
+                        <span class="chat-title">Bantuan coding Python</span>
+                        <span class="chat-date">Hari ini</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-comment"></i>
+                        <span class="chat-title">Penjelasan GitHub Actions</span>
+                        <span class="chat-date">Kemarin</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-comment"></i>
+                        <span class="chat-title">Bug fixing JavaScript</span>
+                        <span class="chat-date">2 hari lalu</span>
+                    </li>
                 </ul>
             </div>
         </div>
 
         <div class="chat-container">
             <div class="messages" id="messages">
+                <div class="welcome-container" id="welcomeContainer">
+                    <div class="welcome-logo">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h1 class="welcome-title">Shiiro AI Assistant</h1>
+                    <p class="welcome-subtitle">Asisten AI cerdas yang siap membantu Anda dengan coding, pemecahan masalah, dan banyak lagi. Dibuat oleh Fathan 8D.</p>
+                    
+                    <div class="capabilities-grid">
+                        <div class="capability-card">
+                            <i class="fas fa-code"></i>
+                            <h4>Bantuan Coding</h4>
+                            <p>Dapatkan bantuan dengan berbagai bahasa pemrograman</p>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fas fa-bug"></i>
+                            <h4>Debugging</h4>
+                            <p>Identifikasi dan perbaiki bug dalam kode Anda</p>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fas fa-lightbulb"></i>
+                            <h4>Penjelasan Konsep</h4>
+                            <p>Dapatkan penjelasan tentang konsep pemrograman</p>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fas fa-rocket"></i>
+                            <h4>Optimasi Kode</h4>
+                            <p>Tingkatkan performa dan kualitas kode Anda</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="message ai-message">
                     <div class="message-header">
-                        <i class="fas fa-robot"></i> Shiiro Ai
+                        <i class="fas fa-robot"></i> Shiiro AI
                     </div>
                     <div class="message-content">
-                        Halo! Saya asisten Shiiro Ai. Saya dibuat oleh Fathan 8D. Apa yang bisa saya bantu?
+                        Halo! Saya asisten Shiiro AI. Saya dibuat oleh Fathan 8D. Apa yang bisa saya bantu hari ini?
+                    </div>
+                    <div class="message-time" id="firstMessageTime"></div>
+                    <div class="message-actions">
+                        <button class="action-btn"><i class="fas fa-copy"></i></button>
+                        <button class="action-btn"><i class="fas fa-thumbs-up"></i></button>
+                        <button class="action-btn"><i class="fas fa-thumbs-down"></i></button>
                     </div>
                 </div>
             </div>
@@ -318,10 +931,36 @@
             const sendBtn = document.getElementById('sendBtn');
             const messagesContainer = document.getElementById('messages');
             const newChatBtn = document.getElementById('newChatBtn');
+            const welcomeContainer = document.getElementById('welcomeContainer');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const themeToggle = document.getElementById('themeToggle');
+            const overlay = document.getElementById('overlay');
+            const firstMessageTime = document.getElementById('firstMessageTime');
             
-            // API configuration
-            const API_KEY = 'sk-uEco8C7Wk9RVnnf9jOcYDHPzLiEYCpaRN5tDM1pNYpmVlpf9';
-            const API_HOST = 'https://api.chatanywhere.org';
+            // Set time for the first message
+            const now = new Date();
+            firstMessageTime.textContent = formatTime(now);
+            
+            // State variables
+            let isDarkMode = localStorage.getItem('shiiro_ai_dark_mode') !== 'false';
+            let conversationHistory = [];
+            
+            // Initialize theme
+            function initTheme() {
+                if (isDarkMode) {
+                    document.body.classList.remove('light-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                } else {
+                    document.body.classList.add('light-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            }
+            
+            // Format time for messages
+            function formatTime(date) {
+                return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            }
             
             // Auto-resize textarea
             messageInput.addEventListener('input', function() {
@@ -334,16 +973,39 @@
                 const message = messageInput.value.trim();
                 if (!message) return;
                 
+                // Hide welcome container if visible
+                if (welcomeContainer.style.display !== 'none') {
+                    welcomeContainer.style.opacity = '0';
+                    setTimeout(() => {
+                        welcomeContainer.style.display = 'none';
+                    }, 300);
+                }
+                
                 // Add user message to chat
                 addMessage(message, 'user');
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
                 
+                // Save to conversation history
+                conversationHistory.push({ role: 'user', content: message });
+                
                 // Show typing animation
                 showTypingAnimation();
                 
-                // Send message to API
-                fetchAIResponse(message);
+                // Simulate AI response (in a real app, this would be an API call)
+                setTimeout(() => {
+                    // Remove typing animation
+                    removeTypingAnimation();
+                    
+                    // Generate AI response
+                    const aiResponse = generateAIResponse(message);
+                    
+                    // Add AI message to chat
+                    addMessage(aiResponse, 'ai');
+                    
+                    // Save to conversation history
+                    conversationHistory.push({ role: 'assistant', content: aiResponse });
+                }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
             }
             
             // Add message to chat
@@ -354,20 +1016,120 @@
                 const messageHeader = document.createElement('div');
                 messageHeader.className = 'message-header';
                 messageHeader.innerHTML = sender === 'ai' 
-                    ? '<i class="fas fa-robot"></i> Shiiro Ai' 
+                    ? '<i class="fas fa-robot"></i> Shiiro AI' 
                     : '<i class="fas fa-user"></i> Anda';
                 
                 const messageContent = document.createElement('div');
                 messageContent.className = 'message-content';
-                messageContent.textContent = content;
+                
+                // Process message content for basic markdown
+                const processedContent = processMarkdown(content);
+                messageContent.innerHTML = processedContent;
+                
+                // Add copy buttons to code blocks
+                messageContent.querySelectorAll('pre').forEach(preBlock => {
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'copy-code-btn';
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                    copyButton.addEventListener('click', () => {
+                        const code = preBlock.querySelector('code')?.innerText || preBlock.innerText;
+                        navigator.clipboard.writeText(code);
+                        copyButton.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    });
+                    preBlock.appendChild(copyButton);
+                });
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = formatTime(new Date());
+                
+                const messageActions = document.createElement('div');
+                messageActions.className = 'message-actions';
+                
+                if (sender === 'ai') {
+                    messageActions.innerHTML = '<button class="action-btn"><i class="fas fa-copy"></i></button><button class="action-btn"><i class="fas fa-thumbs-up"></i></button><button class="action-btn"><i class="fas fa-thumbs-down"></i></button>';
+                } else {
+                    messageActions.innerHTML = '<button class="action-btn"><i class="fas fa-copy"></i></button>';
+                }
                 
                 messageDiv.appendChild(messageHeader);
                 messageDiv.appendChild(messageContent);
+                messageDiv.appendChild(messageTime);
+                messageDiv.appendChild(messageActions);
                 
                 messagesContainer.appendChild(messageDiv);
                 
+                // Add event listeners to action buttons
+                const copyBtn = messageActions.querySelector('.action-btn');
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(content);
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        if (sender === 'ai') {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        } else {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }
+                    }, 2000);
+                });
+                
+                // Add suggestion chips for AI messages
+                if (sender === 'ai') {
+                    addSuggestionChips(messageDiv);
+                }
+                
                 // Scroll to bottom
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Process basic markdown in messages
+            function processMarkdown(text) {
+                // Process bold text
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Process italic text
+                text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // Process code blocks
+                text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                
+                // Process inline code
+                text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+                
+                // Process links
+                text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+                
+                return text;
+            }
+            
+            // Add suggestion chips after AI messages
+            function addSuggestionChips(messageDiv) {
+                const suggestions = [
+                    "Jelaskan tentang machine learning",
+                    "Bantu saya debug kode Python",
+                    "Apa perbedaan antara React dan Vue?",
+                    "Bagaimana cara menggunakan Git?"
+                ];
+                
+                const chipsContainer = document.createElement('div');
+                chipsContainer.className = 'suggestion-chips';
+                
+                suggestions.forEach(suggestion => {
+                    const chip = document.createElement('div');
+                    chip.className = 'suggestion-chip';
+                    chip.textContent = suggestion;
+                    chip.addEventListener('click', () => {
+                        messageInput.value = suggestion;
+                        messageInput.focus();
+                        messageInput.dispatchEvent(new Event('input'));
+                    });
+                    chipsContainer.appendChild(chip);
+                });
+                
+                messageDiv.appendChild(chipsContainer);
             }
             
             // Show typing animation
@@ -376,16 +1138,16 @@
                 typingDiv.className = 'message ai-message typing-animation-container';
                 typingDiv.id = 'typingAnimation';
                 
-                const messageHeader = document.createElement('div');
-                messageHeader.className = 'message-header';
-                messageHeader.innerHTML = '<i class="fas fa-robot"></i> Shiiro Ai';
-                
-                const typingAnimation = document.createElement('div');
-                typingAnimation.className = 'typing-animation';
-                typingAnimation.innerHTML = '<span></span><span></span><span></span>';
-                
-                typingDiv.appendChild(messageHeader);
-                typingDiv.appendChild(typingAnimation);
+                typingDiv.innerHTML = `
+                    <div class="message-header">
+                        <i class="fas fa-robot"></i> Shiiro AI
+                    </div>
+                    <div class="typing-animation">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
                 
                 messagesContainer.appendChild(typingDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -393,48 +1155,30 @@
             
             // Remove typing animation
             function removeTypingAnimation() {
-                const typingElement = document.getElementById('typingAnimation');
-                if (typingElement) {
-                    typingElement.remove();
+                const typingDiv = document.getElementById('typingAnimation');
+                if (typingDiv) {
+                    typingDiv.remove();
                 }
             }
             
-            // Fetch AI response
-            async function fetchAIResponse(userMessage) {
-                try {
-                    const response = await fetch(`${API_HOST}/v1/chat/completions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${API_KEY}`
-                        },
-                        body: JSON.stringify({
-                            model: "gpt-3.5-turbo",
-                            messages: [
-                                {
-                                    role: "system",
-                                    content: "Anda adalah asisten AI yang membantu dengan pertanyaan coding, GitHub, dan topik teknis. Berikan jawaban yang jelas dan informatif."
-                                },
-                                {
-                                    role: "user",
-                                    content: userMessage
-                                }
-                            ],
-                            temperature: 0.7
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    const aiResponse = data.choices[0].message.content;
-                    
-                    // Remove typing animation and add AI response
-                    removeTypingAnimation();
-                    addMessage(aiResponse, 'ai');
-                    
-                } catch (error) {
-                    console.error('Error fetching AI response:', error);
-                    removeTypingAnimation();
-                    addMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
+            // Generate AI response based on user input
+            function generateAIResponse(userMessage) {
+                const lowerCaseMessage = userMessage.toLowerCase();
+                
+                // Simple response logic - in a real app, this would be replaced with API calls
+                if (lowerCaseMessage.includes('hallo') || lowerCaseMessage.includes('hai') || lowerCaseMessage.includes('hi')) {
+                    return "Halo! Senang berbicara dengan Anda. Ada yang bisa saya bantu hari ini?";
+                } else if (lowerCaseMessage.includes('python') || lowerCaseMessage.includes('kode')) {
+                    return "Saya bisa membantu dengan Python! Berikut contoh fungsi Python sederhana:\n\n```python\ndef sapa(nama):\n    print(f\"Halo, {nama}! Selamat datang di Shiiro AI.\")\n\n# Pemanggilan fungsi\nsapa(\"Fathan\")\n```\n\nApakah Anda ingin penjelasan lebih lanjut tentang topik tertentu?";
+                } else if (lowerCaseMessage.includes('javascript') || lowerCaseMessage.includes('js')) {
+                    return "JavaScript adalah bahasa pemrograman yang sangat populer untuk web development. Berikut contoh penggunaan async/await:\n\n```javascript\nasync function fetchData() {\n    try {\n        const response = await fetch('https://api.example.com/data');\n        const data = await response.json();\n        console.log(data);\n    } catch (error) {\n        console.error('Error fetching data:', error);\n    }\n}\n```\n\nAda pertanyaan spesifik tentang JavaScript?";
+                } else if (lowerCaseMessage.includes('terima kasih') || lowerCaseMessage.includes('makasih')) {
+                    return "Sama-sama! Senang bisa membantu. Jika ada pertanyaan lagi, jangan ragu untuk bertanya 😊";
+                } else if (lowerCaseMessage.includes('bug') || lowerCaseMessage.includes('error')) {
+                    return "Saya bisa membantu men-debug kode Anda. Silakan kirim potongan kode yang mengalami masalah, dan saya akan mencoba membantu menemukan masalahnya. Jangan lupa untuk menyertakan pesan error yang muncul (jika ada).";
+                } else {
+                    // Default response for unrecognized queries
+                    return "Terima kasih atas pertanyaannya! Sebagai asisten AI, saya dapat membantu dengan berbagai topik pemrograman seperti Python, JavaScript, HTML/CSS, debugging, dan konsep-konsep komputer science. Apakah ada topik spesifik yang ingin Anda pelajari?";
                 }
             }
             
@@ -449,11 +1193,44 @@
             });
             
             newChatBtn.addEventListener('click', function() {
-                // Clear chat but keep the first AI message
-                while (messagesContainer.children.length > 1) {
-                    messagesContainer.removeChild(messagesContainer.lastChild);
+                // Clear conversation history
+                conversationHistory = [];
+                
+                // Clear messages (except the first AI message)
+                const messages = messagesContainer.querySelectorAll('.message');
+                for (let i = 1; i < messages.length; i++) {
+                    messages[i].remove();
                 }
+                
+                // Show welcome container
+                welcomeContainer.style.display = 'flex';
+                setTimeout(() => {
+                    welcomeContainer.style.opacity = '1';
+                }, 10);
+                
+                // Reset input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
             });
+            
+            themeToggle.addEventListener('click', function() {
+                isDarkMode = !isDarkMode;
+                localStorage.setItem('shiiro_ai_dark_mode', isDarkMode);
+                initTheme();
+            });
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Initialize the app
+            initTheme();
         });
     </script>
 </body>
