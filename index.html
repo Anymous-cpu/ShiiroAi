@@ -569,6 +569,197 @@
             text-align: center;
         }
 
+        /* Modal API Key */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background-color: var(--github-dark);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--github-border);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--github-border);
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--github-text);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--github-text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--github-text);
+        }
+
+        .api-key-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            color: var(--github-text-secondary);
+            font-weight: 500;
+        }
+
+        .api-key-input {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--github-border);
+            background-color: var(--github-darker);
+            color: var(--github-text);
+            font-size: 15px;
+            transition: all var(--transition-speed);
+        }
+
+        .api-key-input:focus {
+            outline: none;
+            border-color: var(--github-blue);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        }
+
+        .forgot-api {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .forgot-api-btn {
+            background: none;
+            border: none;
+            color: var(--github-blue);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .forgot-api-btn:hover {
+            color: var(--github-blue-light);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .submit-btn {
+            background: var(--new-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .cancel-btn {
+            background: rgba(136, 136, 136, 0.1);
+            color: var(--github-text);
+            border: 1px solid var(--github-border);
+            border-radius: var(--radius);
+            padding: 10px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .cancel-btn:hover {
+            background: rgba(136, 136, 136, 0.15);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            animation: slideInRight 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+
+        .toast.error {
+            background-color: var(--danger);
+        }
+
+        /* API Key indicator */
+        .api-key-status {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--github-text-secondary);
+            margin-top: 8px;
+            gap: 6px;
+        }
+
+        .change-api-key {
+            color: var(--github-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .change-api-key:hover {
+            color: var(--github-blue-light);
+        }
+
         /* Responsiveness for mobile */
         @media (max-width: 768px) {
             .sidebar {
@@ -637,6 +828,11 @@
             
             .message-input {
                 padding: 14px 16px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
             }
         }
 
@@ -722,6 +918,37 @@
             }
             50% {
                 transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
             }
         }
 
@@ -902,6 +1129,31 @@
     </style>
 </head>
 <body>
+    <!-- Modal untuk input API Key -->
+    <div class="modal" id="apiKeyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Masukkan API Key Shiiro AI</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="api-key-form">
+                <div class="form-group">
+                    <label for="apiKeyInput">API Key</label>
+                    <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Masukkan API Key Anda">
+                    <div class="forgot-api">
+                        <button class="forgot-api-btn" id="forgotApiBtn">
+                            <i class="fas fa-key"></i> Lupa API Key?
+                        </button>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="cancel-btn" id="cancelApiBtn">Batal</button>
+                    <button class="submit-btn" id="submitApiBtn">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <div class="logo">
             <div class="menu-toggle" id="menuToggle">
@@ -918,13 +1170,16 @@
             </button>
             <div class="menu-dropdown">
                 <button class="header-btn" id="menuBtn">
-                    <i class="fas fa-equals"></i>
+                    <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="menu-content" id="menuContent">
                     <a href="#" class="menu-item" id="newChatMenuBtn">
                         <i class="fas fa-plus"></i> Pesan Baru
                     </a>
-                    <a href="credit.html" class="menu-item">
+                    <a href="#" class="menu-item" id="changeApiKeyMenuBtn">
+                        <i class="fas fa-key"></i> Ubah API Key
+                    </a>
+                    <a href="#" class="menu-item">
                         <i class="fas fa-copyright"></i> Credit
                     </a>
                 </div>
@@ -972,6 +1227,12 @@
                     <div class="connection-status">
                         <i class="fas fa-circle" style="color: #2ea043; font-size: 8px; margin-right: 5px;"></i>
                         Terhubung ke API - Siap digunakan
+                    </div>
+                    
+                    <div class="api-key-status" id="apiKeyStatus">
+                        <i class="fas fa-key"></i>
+                        API Key: <span id="apiKeyStatusText">Belum diatur</span>
+                        <span class="change-api-key" id="changeApiKey">Ubah</span>
                     </div>
                     
                     <div class="capabilities-grid">
@@ -1036,13 +1297,117 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
             const themeToggle = document.getElementById('themeToggle');
+            const changeApiKeyMenuBtn = document.getElementById('changeApiKeyMenuBtn');
             
-            // API key yang sudah ditetapkan
-            const apiKey = 'sk-uEco8C7Wk9RVnnf9jOcYDHPzLiEYCpaRN5tDM1pNYpmVlpf9';
+            // Elemen untuk fitur API Key
+            const apiKeyModal = document.getElementById('apiKeyModal');
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const closeModal = document.getElementById('closeModal');
+            const cancelApiBtn = document.getElementById('cancelApiBtn');
+            const submitApiBtn = document.getElementById('submitApiBtn');
+            const forgotApiBtn = document.getElementById('forgotApiBtn');
+            const apiKeyStatusText = document.getElementById('apiKeyStatusText');
+            const changeApiKey = document.getElementById('changeApiKey');
+            
+            // API key default
+            const defaultApiKey = 'sk-uEco8C7Wk9RVnnf9jOcYDHPzLiEYCpaRN5tDM1pNYpmVlpf9';
             
             // State variables
             let isDarkMode = true;
             let currentChatId = null;
+            
+            // Tampilkan modal API key jika belum disimpan
+            if (!localStorage.getItem('shiiroApiKey')) {
+                setTimeout(() => {
+                    apiKeyModal.style.display = 'flex';
+                    apiKeyInput.value = defaultApiKey;
+                }, 1000);
+            } else {
+                updateApiKeyStatus();
+            }
+            
+            // Fungsi untuk menampilkan notifikasi
+            function showToast(message, isError = false) {
+                const toast = document.createElement('div');
+                toast.className = isError ? 'toast error' : 'toast';
+                toast.innerHTML = `
+                    <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                    ${message}
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Hapus toast setelah animasi selesai
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Update status API key
+            function updateApiKeyStatus() {
+                const savedApiKey = localStorage.getItem('shiiroApiKey');
+                if (savedApiKey) {
+                    apiKeyStatusText.textContent = 'Tersimpan';
+                } else {
+                    apiKeyStatusText.textContent = 'Belum diatur';
+                }
+            }
+            
+            // Event listener untuk tombol "Lupa API Key?"
+            forgotApiBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(defaultApiKey)
+                    .then(() => {
+                        showToast('API Key berhasil disalin ke clipboard!');
+                    })
+                    .catch(err => {
+                        showToast('Gagal menyalin API Key', true);
+                        console.error('Gagal menyalin API Key: ', err);
+                    });
+            });
+            
+            // Event listener untuk menyimpan API key
+            submitApiBtn.addEventListener('click', function() {
+                const apiKey = apiKeyInput.value.trim();
+                
+                if (apiKey) {
+                    localStorage.setItem('shiiroApiKey', apiKey);
+                    apiKeyModal.style.display = 'none';
+                    showToast('API Key berhasil disimpan!');
+                    updateApiKeyStatus();
+                } else {
+                    showToast('Silakan masukkan API Key', true);
+                }
+            });
+            
+            // Event listener untuk menutup modal
+            closeModal.addEventListener('click', function() {
+                apiKeyModal.style.display = 'none';
+            });
+            
+            cancelApiBtn.addEventListener('click', function() {
+                apiKeyModal.style.display = 'none';
+            });
+            
+            // Event listener untuk mengubah API key dari menu
+            changeApiKeyMenuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                apiKeyInput.value = localStorage.getItem('shiiroApiKey') || '';
+                apiKeyModal.style.display = 'flex';
+                menuContent.classList.remove('show');
+            });
+            
+            // Event listener untuk mengubah API key dari status
+            changeApiKey.addEventListener('click', function() {
+                apiKeyInput.value = localStorage.getItem('shiiroApiKey') || '';
+                apiKeyModal.style.display = 'flex';
+            });
+            
+            // Tutup modal ketika klik di luar area modal
+            window.addEventListener('click', function(event) {
+                if (event.target === apiKeyModal) {
+                    apiKeyModal.style.display = 'none';
+                }
+            });
             
             // Auto-resize textarea
             messageInput.addEventListener('input', function() {
@@ -1170,13 +1535,64 @@
             
             // Fetch AI response
             function fetchAIResponse(message) {
-                // In a real implementation, this would call an actual API
-                // For demo purposes, we'll simulate a response after a delay
+                const savedApiKey = localStorage.getItem('shiiroApiKey') || defaultApiKey;
                 
-                setTimeout(() => {
+                // Tampilkan indikator mengetik
+                showTypingAnimation();
+                
+                // Set timeout untuk mencegah loading terlalu lama
+                const timeoutDuration = 10000; // 10 detik
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), timeoutDuration)
+                );
+                
+                // Gunakan API yang benar
+                const apiPromise = fetch('https://api.chatanywhere.tech/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${savedApiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Anda adalah asisten AI yang membantu dengan pertanyaan coding, GitHub, dan topik teknis lainnya. Berikan jawaban yang singkat, jelas, dan langsung ke intinya.'
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+                
+                // Gunakan Promise.race untuk timeout
+                Promise.race([apiPromise, timeoutPromise])
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     hideTypingAnimation();
                     
-                    // Simulate different responses based on message content
+                    if (data.choices && data.choices.length > 0) {
+                        const response = data.choices[0].message.content;
+                        addMessage(response, 'ai');
+                    } else {
+                        addMessage('Maaf, saya mengalami masalah. Silakan coba lagi.', 'ai');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideTypingAnimation();
+                    
+                    // Fallback responses jika API error
                     let response = '';
                     
                     if (message.toLowerCase().includes('python') || message.toLowerCase().includes('coding')) {
@@ -1190,7 +1606,7 @@
                     }
                     
                     addMessage(response, 'ai');
-                }, 2000);
+                });
             }
             
             // Event listeners
