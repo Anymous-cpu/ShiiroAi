@@ -1,1677 +1,578 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shiiro AI - Asisten Cerdas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --github-black: #0d1117;
-            --github-dark: #161b22;
-            --github-darker: #0d1117;
-            --github-border: #30363d;
-            --github-blue: #58a6ff;
-            --github-blue-light: #79c0ff;
-            --github-text: #f0f6fc;
-            --github-text-secondary: #8b949e;
-            --ai-message-bg: #161b22;
-            --user-message-bg: #1c3b53;
-            --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #2ea043 100%);
-            --sidebar-width: 280px;
-            --header-height: 60px;
-            --transition-speed: 0.3s;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            --radius: 12px;
-            --pulse-color: rgba(88, 166, 255, 0.5);
-            --success: #2ea043;
-            --danger: #f85149;
-            --menu-bg: rgba(22, 27, 34, 0.95);
-            --new-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --message-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .light-mode {
-            --github-black: #ffffff;
-            --github-dark: #f6f8fa;
-            --github-darker: #eaeef2;
-            --github-border: #d0d7de;
-            --github-blue: #0969da;
-            --github-blue-light: #218bff;
-            --github-text: #24292f;
-            --github-text-secondary: #57606a;
-            --ai-message-bg: #f6f8fa;
-            --user-message-bg: #ddf4ff;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-            --pulse-color: rgba(9, 105, 218, 0.3);
-            --success: #1a7f37;
-            --danger: #cf222e;
-            --menu-bg: rgba(246, 248, 250, 0.95);
-            --new-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        body {
-            background-color: var(--github-black);
-            color: var(--github-text);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .header {
-            background-color: var(--github-dark);
-            padding: 0 20px;
-            border-bottom: 1px solid var(--github-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: var(--header-height);
-            backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 10;
-            transition: all var(--transition-speed);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: var(--new-gradient);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: all var(--transition-speed);
-            animation: pulse 2s infinite;
-        }
-
-        .logo-icon i {
-            color: white;
-            font-size: 18px;
-        }
-
-        .logo h1 {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--github-blue) 0%, var(--github-blue-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            transition: all var(--transition-speed);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            position: relative;
-        }
-
-        .header-btn {
-            background: rgba(136, 136, 136, 0.1);
-            border: 1px solid var(--github-border);
-            color: var(--github-text);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-        }
-
-        .header-btn:hover {
-            background: rgba(136, 136, 136, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--github-darker);
-            border-right: 1px solid var(--github-border);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            transition: transform var(--transition-speed) ease-in-out;
-            z-index: 5;
-        }
-
-        .new-chat-btn {
-            background: var(--new-gradient);
-            color: white;
-            border: none;
-            padding: 12px 16px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            transition: all var(--transition-speed);
-        }
-
-        .new-chat-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .new-chat-btn i {
-            font-size: 14px;
-        }
-
-        .chat-history {
-            margin-top: 24px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .chat-history h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--github-text-secondary);
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .chat-list {
-            list-style: none;
-        }
-
-        .chat-list li {
-            padding: 12px;
-            border-radius: var(--radius);
-            margin-bottom: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all var(--transition-speed);
-            border: 1px solid transparent;
-        }
-
-        .chat-list li:hover {
-            background-color: rgba(88, 166, 255, 0.1);
-            border-color: rgba(88, 166, 255, 0.3);
-        }
-
-        .chat-list li.active {
-            background-color: rgba(88, 166, 255, 0.15);
-            border-color: rgba(88, 166, 255, 0.4);
-        }
-
-        .chat-list li i {
-            color: var(--github-blue);
-            font-size: 14px;
-        }
-
-        .chat-list li .chat-title {
-            flex: 1;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-list li .chat-date {
-            font-size: 12px;
-            color: var(--github-text-secondary);
-        }
-
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(28, 59, 83, 0.03) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(88, 166, 255, 0.03) 0%, transparent 25%);
-        }
-
-        .messages {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 18px 20px;
-            border-radius: var(--radius);
-            line-height: 1.5;
-            position: relative;
-            animation: fadeIn 0.4s ease-out;
-            box-shadow: var(--message-shadow);
-            transition: all var(--transition-speed);
-        }
-
-        .ai-message {
-            background-color: var(--ai-message-bg);
-            border: 1px solid var(--github-border);
-            align-self: flex-start;
-            border-top-left-radius: 4px;
-        }
-
-        .user-message {
-            background: var(--new-gradient);
-            color: white;
-            align-self: flex-end;
-            border-top-right-radius: 4px;
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .message-header i {
-            margin-right: 8px;
-        }
-
-        .ai-message .message-header {
-            color: var(--github-blue);
-        }
-
-        .user-message .message-header {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .message-content {
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .message-content pre {
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            overflow-x: auto;
-            margin: 10px 0;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
-            border: 1px solid var(--github-border);
-        }
-
-        .message-content code {
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
-            border: 1px solid var(--github-border);
-        }
-
-        .input-container {
-            padding: 20px;
-            border-top: 1px solid var(--github-border);
-            background-color: rgba(22, 27, 34, 0.7);
-            backdrop-filter: blur(10px);
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            transition: all var(--transition-speed);
-        }
-
-        .light-mode .input-container {
-            background-color: rgba(246, 248, 250, 0.7);
-        }
-
-        .message-input {
-            flex: 1;
-            padding: 16px 18px;
-            border-radius: var(--radius);
-            border: 1px solid var(--github-border);
-            background-color: var(--github-dark);
-            color: var(--github-text);
-            resize: none;
-            min-height: 56px;
-            max-height: 150px;
-            font-size: 15px;
-            transition: all var(--transition-speed);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .message-input:focus {
-            outline: none;
-            border-color: var(--github-blue);
-            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2), inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .send-btn {
-            background: var(--new-gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-            box-shadow: var(--shadow);
-        }
-
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .send-btn:active {
-            transform: translateY(0);
-        }
-
-        .send-btn i {
-            font-size: 20px;
-        }
-
-        /* Welcome screen */
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 20px;
-            opacity: 1;
-            transition: opacity var(--transition-speed);
-        }
-
-        .welcome-logo {
-            width: 90px;
-            height: 90px;
-            background: var(--new-gradient);
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-            transition: all var(--transition-speed);
-            animation: pulse 2s infinite, float 3s ease-in-out infinite;
-        }
-
-        .welcome-logo i {
-            font-size: 40px;
-            color: white;
-        }
-
-        .welcome-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .welcome-subtitle {
-            font-size: 17px;
-            color: var(--github-text-secondary);
-            max-width: 500px;
-            margin-bottom: 32px;
-            line-height: 1.6;
-        }
-
-        .capabilities-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-
-        .capability-card {
-            background-color: rgba(136, 136, 136, 0.05);
-            border: 1px solid var(--github-border);
-            border-radius: var(--radius);
-            padding: 18px;
-            text-align: center;
-            transition: all var(--transition-speed);
-        }
-
-        .capability-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--github-blue);
-            box-shadow: var(--shadow);
-        }
-
-        .capability-card i {
-            font-size: 26px;
-            color: var(--github-blue);
-            margin-bottom: 12px;
-        }
-
-        .capability-card h4 {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .capability-card p {
-            font-size: 14px;
-            color: var(--github-text-secondary);
-        }
-
-        /* Message actions */
-        .message-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            opacity: 0;
-            transition: opacity var(--transition-speed);
-        }
-
-        .message:hover .message-actions {
-            opacity: 1;
-        }
-
-        .action-btn {
-            background: rgba(136, 136, 136, 0.1);
-            border: none;
-            border-radius: 6px;
-            color: var(--github-text-secondary);
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all var(--transition-speed);
-        }
-
-        .action-btn:hover {
-            background: rgba(136, 136, 136, 0.15);
-            color: var(--github-text);
-        }
-
-        /* Menu dropdown */
-        .menu-dropdown {
-            position: relative;
-        }
-
-        .menu-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 45px;
-            background-color: var(--menu-bg);
-            min-width: 160px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--github-border);
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-        }
-
-        .menu-content.show {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            color: var(--github-text);
-            text-decoration: none;
-            transition: all var(--transition-speed);
-            border-bottom: 1px solid var(--github-border);
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .menu-item:hover {
-            background-color: rgba(88, 166, 255, 0.1);
-        }
-
-        .menu-item i {
-            margin-right: 10px;
-            width: 18px;
-            text-align: center;
-        }
-
-        /* Modal API Key */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .modal-content {
-            background-color: var(--github-dark);
-            border-radius: var(--radius);
-            padding: 24px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--github-border);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--github-border);
-            padding-bottom: 15px;
-        }
-
-        .modal-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--github-text);
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--github-text-secondary);
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .close-modal:hover {
-            color: var(--github-text);
-        }
-
-        .api-key-form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 14px;
-            color: var(--github-text-secondary);
-            font-weight: 500;
-        }
-
-        .api-key-input {
-            padding: 12px 16px;
-            border-radius: var(--radius);
-            border: 1px solid var(--github-border);
-            background-color: var(--github-darker);
-            color: var(--github-text);
-            font-size: 15px;
-            transition: all var(--transition-speed);
-        }
-
-        .api-key-input:focus {
-            outline: none;
-            border-color: var(--github-blue);
-            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
-        }
-
-        .forgot-api {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-top: 8px;
-        }
-
-        .forgot-api-btn {
-            background: none;
-            border: none;
-            color: var(--github-blue);
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
-        }
-
-        .forgot-api-btn:hover {
-            color: var(--github-blue-light);
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .submit-btn {
-            background: var(--new-gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            padding: 10px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .cancel-btn {
-            background: rgba(136, 136, 136, 0.1);
-            color: var(--github-text);
-            border: 1px solid var(--github-border);
-            border-radius: var(--radius);
-            padding: 10px 20px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-        }
-
-        .cancel-btn:hover {
-            background: rgba(136, 136, 136, 0.15);
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--success);
-            color: white;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1001;
-            animation: slideInRight 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
-        }
-
-        .toast.error {
-            background-color: var(--danger);
-        }
-
-        /* API Key indicator */
-        .api-key-status {
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-            color: var(--github-text-secondary);
-            margin-top: 8px;
-            gap: 6px;
-        }
-
-        .change-api-key {
-            color: var(--github-blue);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .change-api-key:hover {
-            color: var(--github-blue-light);
-        }
-
-        /* Responsiveness for mobile */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: var(--header-height);
-                bottom: 0;
-                transform: translateX(-100%);
-                width: 85%;
-                max-width: 300px;
-                z-index: 100;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
-            }
-            
-            .message {
-                max-width: 90%;
-            }
-            
-            .header {
-                padding: 0 16px;
-            }
-            
-            .capabilities-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .menu-toggle {
-                display: flex;
-            }
-
-            .overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 99;
-            }
-            
-            .overlay.active {
-                display: block;
-            }
-            
-            .welcome-title {
-                font-size: 24px;
-            }
-            
-            .welcome-subtitle {
-                font-size: 14px;
-                padding: 0 10px;
-            }
-            
-            .menu-content {
-                right: -10px;
-            }
-            
-            .input-container {
-                padding: 15px;
-            }
-            
-            .message-input {
-                padding: 14px 16px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-            }
-        }
-
-        /* Menu toggle button */
-        .menu-toggle {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: rgba(136, 136, 136, 0.1);
-            border: 1px solid var(--github-border);
-            color: var(--github-text);
-            cursor: pointer;
-            margin-right: 12px;
-            transition: all var(--transition-speed);
-        }
-
-        .menu-toggle:hover {
-            background: rgba(136, 136, 136, 0.15);
-        }
-
-        /* Loading animation */
-        .typing-animation {
-            display: flex;
-            padding: 10px 0;
-        }
-
-        .typing-animation span {
-            height: 8px;
-            width: 8px;
-            background: var(--github-text-secondary);
-            border-radius: 50%;
-            margin-right: 5px;
-            animation: typing 1s linear infinite;
-        }
-
-        .typing-animation span:nth-child(2) {
-            animation-delay: 0.2s;
-            background: var(--github-blue);
-        }
-
-        .typing-animation span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 var(--pulse-color);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(88, 166, 255, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(88, 166, 255, 0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--github-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--github-border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--github-blue);
-        }
-
-        /* Markdown styling */
-        .message-content h1, 
-        .message-content h2, 
-        .message-content h3 {
-            margin: 16px 0 8px 0;
-            color: var(--github-blue-light);
-        }
-
-        .message-content p {
-            margin-bottom: 12px;
-        }
-
-        .message-content ul, 
-        .message-content ol {
-            margin: 8px 0 12px 20px;
-        }
-
-        .message-content li {
-            margin-bottom: 4px;
-        }
-
-        .message-content blockquote {
-            border-left: 4px solid var(--github-blue);
-            padding-left: 16px;
-            margin: 12px 0;
-            color: var(--github-text-secondary);
-        }
-
-        .message-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12px 0;
-        }
-
-        .message-content th, 
-        .message-content td {
-            border: 1px solid var(--github-border);
-            padding: 8px;
-            text-align: left;
-        }
-
-        .message-content th {
-            background-color: rgba(136, 136, 136, 0.05);
-        }
-
-        /* Status indicator */
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success);
-            margin-left: 8px;
-            animation: pulse 2s infinite;
-        }
-
-        /* Improved animations */
-        .message {
-            transform-origin: center bottom;
-        }
-
-        .user-message {
-            transform-origin: center bottom;
-        }
-
-        /* Enhanced focus states */
-        .message-input:focus, 
-        .header-btn:focus, 
-        .action-btn:focus, 
-        .send-btn:focus {
-            outline: 2px solid var(--github-blue);
-            outline-offset: 2px;
-        }
-
-        /* Connection status */
-        .connection-status {
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-            color: var(--github-text-secondary);
-            margin-top: 8px;
-        }
-        
-        /* Improved message bubbles */
-        .ai-message::before {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: -10px;
-            border-width: 0 0 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent var(--ai-message-bg) transparent;
-            transform: rotate(45deg);
-        }
-        
-        .user-message::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            right: -10px;
-            border-width: 0 0 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent transparent transparent;
-            transform: rotate(-45deg);
-        }
-        
-        /* Improved feedback buttons */
-        .action-btn.liked {
-            color: var(--success) !important;
-        }
-        
-        .action-btn.disliked {
-            color: var(--danger) !important;
-        }
-        
-        /* Smooth transitions for theme switching */
-        .logo-icon, .welcome-logo, .new-chat-btn, .send-btn {
-            transition: all 0.5s ease;
-        }
-        
-        /* Glassmorphism effect for messages */
-        .ai-message {
-            backdrop-filter: blur(10px);
-            background-color: rgba(22, 27, 34, 0.8);
-        }
-        
-        /* Improved input focus effect */
-        .message-input:focus {
-            transform: translateY(-2px);
-        }
-        
-        /* Subtle hover effects for all interactive elements */
-        .chat-list li, .header-btn, .action-btn {
-            transition: all 0.2s ease;
-        }
-        
-        /* Enhanced logo animation */
-        .logo-icon {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .logo-icon::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0.2),
-                rgba(255, 255, 255, 0)
-            );
-            transform: rotate(30deg);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Shiiro Bot — Dibuat oleh Fathan 8D</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card-bg: rgba(30, 30, 30, 0.7);
+      --text: #ffffff;
+      --text-secondary: #b0b0b0;
+      --accent: #00d4ff;
+      --accent-pink: #ff2a6d;
+      --accent-glow: 0 0 20px rgba(0, 212, 255, 0.6);
+      --border-radius: 18px;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .light-mode {
+      --bg: #f8f9fa;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text: #121212;
+      --text-secondary: #555;
+      --accent: #00b4d8;
+      --accent-glow: 0 0 15px rgba(0, 180, 216, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+      transition: var(--transition);
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(20, 20, 20, 0.6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo i {
+      font-size: 24px;
+    }
+
+    .menu-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: rotate(90deg);
+    }
+
+    /* Menu Dropdown */
+    .menu-dropdown {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border-radius: var(--border-radius);
+      padding: 16px 0;
+      min-width: 220px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: none;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+
+    .menu-toggle.active + .menu-dropdown {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .menu-item {
+      padding: 14px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      transition: var(--transition);
+      border-left: 3px solid transparent;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 3px solid var(--accent);
+      transform: translateX(4px);
+    }
+
+    .menu-item i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+      overflow-y: auto;
+      margin-top: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 16px 20px;
+      margin: 12px 0;
+      border-radius: var(--border-radius);
+      line-height: 1.6;
+      position: relative;
+      animation: fadeInUp 0.5s ease;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent-pink), #ff4757);
+      color: white;
+      border-bottom-right-radius: 6px;
+      box-shadow: 0 4px 20px rgba(255, 42, 109, 0.3);
+    }
+
+    .ai-message {
+      align-self: flex-start;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 6px;
+      box-shadow: var(--accent-glow);
+      backdrop-filter: blur(8px);
+    }
+
+    .ai-message .prefix {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Video dalam chat */
+    .ai-message video {
+      width: 100%;
+      max-height: 360px;
+      border-radius: 12px;
+      margin: 10px 0;
+      background: #000;
+      object-fit: cover;
+    }
+
+    /* Input Area */
+    .input-area {
+      padding: 16px 20px;
+      background: rgba(20, 20, 20, 0.6);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      gap: 12px;
+      position: sticky;
+      bottom: 0;
+      z-index: 99;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 16px 20px;
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(30, 30, 30, 0.6);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-area input:focus {
+      border-color: var(--accent);
+      box-shadow: var(--accent-glow);
+    }
+
+    .input-area button {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+    }
+
+    .input-area button:hover {
+      transform: scale(1.08) rotate(15deg);
+      box-shadow: 0 6px 25px rgba(0, 212, 255, 0.6);
+    }
+
+    /* Typing Indicator */
+    .typing {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 12px 20px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      align-self: flex-start;
+    }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.5s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.8); opacity: 0.5; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header { padding: 12px 16px; }
+      .logo { font-size: 20px; }
+      .menu-btn { width: 40px; height: 40px; }
+      .message { max-width: 92%; }
+      .input-area { padding: 12px 16px; }
+      .input-area input { padding: 14px 16px; }
+      .input-area button { width: 48px; height: 48px; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Modal untuk input API Key -->
-    <div class="modal" id="apiKeyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Masukkan API Key Shiiro AI</h2>
-                <button class="close-modal" id="closeModal">&times;</button>
-            </div>
-            <div class="api-key-form">
-                <div class="form-group">
-                    <label for="apiKeyInput">API Key</label>
-                    <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Masukkan API Key Anda">
-                    <div class="forgot-api">
-                        <button class="forgot-api-btn" id="forgotApiBtn">
-                            <i class="fas fa-key"></i> Lupa API Key?
-                        </button>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="cancel-btn" id="cancelApiBtn">Batal</button>
-                    <button class="submit-btn" id="submitApiBtn">Simpan</button>
-                </div>
-            </div>
-        </div>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <i class="fas fa-robot"></i> Shiiro Bot
     </div>
-
-    <div class="header">
-        <div class="logo">
-            <div class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </div>
-            <div class="logo-icon">
-                <i class="fas fa-robot"></i>
-            </div>
-            <h1>Shiiro AI</h1>
-        </div>
-        <div class="header-actions">
-            <button class="header-btn" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
-            <div class="menu-dropdown">
-                <button class="header-btn" id="menuBtn">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="menu-content" id="menuContent">
-                    <a href="#" class="menu-item" id="newChatMenuBtn">
-                        <i class="fas fa-plus"></i> Pesan Baru
-                    </a>
-                    <a href="#" class="menu-item" id="changeApiKeyMenuBtn">
-                        <i class="fas fa-key"></i> Ubah API Key
-                    </a>
-                    <a href="#" class="menu-item">
-                        <i class="fas fa-copyright"></i> Credit
-                    </a>
-                </div>
-            </div>
-        </div>
+    <button class="menu-btn menu-toggle" id="menuToggle">=</button>
+    <div class="menu-dropdown" id="menuDropdown">
+      <div class="menu-item" id="themeToggle">
+        <i class="fas fa-sun"></i> Ubah ke Mode Terang
+      </div>
+      <div class="menu-item" id="keyToggle">
+        <i class="fas fa-key"></i> Ubah API Key
+      </div>
+      <div class="menu-item" id="creditBtn">
+        <i class="fas fa-code"></i> Credit
+      </div>
     </div>
+  </div>
 
-    <div class="main-container">
-        <div class="overlay" id="overlay"></div>
-        <div class="sidebar" id="sidebar">
-            <button class="new-chat-btn" id="newChatBtn">
-                <i class="fas fa-plus"></i> Chat Baru
-            </button>
-            <div class="chat-history">
-                <h3>Riwayat Percakapan</h3>
-                <ul class="chat-list">
-                    <li class="active">
-                        <i class="fas fa-comment"></i>
-                        <span class="chat-title">Bantuan coding Python</span>
-                        <span class="chat-date">Hari ini</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-comment"></i>
-                        <span class="chat-title">Penjelasan GitHub Actions</span>
-                        <span class="chat-date">Kemarin</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-comment"></i>
-                        <span class="chat-title">Bug fixing JavaScript</span>
-                        <span class="chat-date">2 hari lalu</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="chat-container">
-            <div class="messages" id="messages">
-                <div class="welcome-container" id="welcomeContainer">
-                    <div class="welcome-logo">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h1 class="welcome-title">Shiiro AI Assistant</h1>
-                    <p class="welcome-subtitle">Asisten AI cerdas yang siap membantu Anda dengan coding, pemecahan masalah, dan banyak lagi. Dibuat oleh Fathan 8D.</p>
-                    
-                    <div class="connection-status">
-                        <i class="fas fa-circle" style="color: #2ea043; font-size: 8px; margin-right: 5px;"></i>
-                        Terhubung ke API - Siap digunakan
-                    </div>
-                    
-                    <div class="api-key-status" id="apiKeyStatus">
-                        <i class="fas fa-key"></i>
-                        API Key: <span id="apiKeyStatusText">Belum diatur</span>
-                        <span class="change-api-key" id="changeApiKey">Ubah</span>
-                    </div>
-                    
-                    <div class="capabilities-grid">
-                        <div class="capability-card">
-                            <i class="fas fa-code"></i>
-                            <h4>Bantuan Coding</h4>
-                            <p>Dapatkan bantuan dengan berbagai bahasa pemrograman</p>
-                        </div>
-                        <div class="capability-card">
-                            <i class="fas fa-bug"></i>
-                            <h4>Debugging</h4>
-                            <p>Identifikasi dan perbaiki bug dalam kode Anda</p>
-                        </div>
-                        <div class="capability-card">
-                            <i class="fas fa-lightbulb"></i>
-                            <h4>Penjelasan Konsep</h4>
-                            <p>Dapatkan penjelasan tentang konsep pemrograman</p>
-                        </div>
-                        <div class="capability-card">
-                            <i class="fas fa-rocket"></i>
-                            <h4>Optimasi Kode</h4>
-                            <p>Tingkatkan performa dan kualitas kode Anda</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="message ai-message">
-                    <div class="message-header">
-                        <i class="fas fa-robot"></i> Shiiro AI
-                    </div>
-                    <div class="message-content">
-                        Halo! Saya asisten Shiiro AI. Saya dibuat oleh Fathan 8D. Saya siap membantu Anda dengan pertanyaan coding, GitHub, dan topik teknis lainnya. Apa yang bisa saya bantu hari ini?
-                    </div>
-                    <div class="message-actions">
-                        <button class="action-btn"><i class="fas fa-copy"></i></button>
-                        <button class="action-btn"><i class="fas fa-thumbs-up"></i></button>
-                        <button class="action-btn"><i class="fas fa-thumbs-down"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-container">
-                <textarea class="message-input" id="messageInput" placeholder="Ketik pesan Anda di sini..." rows="1"></textarea>
-                <button class="send-btn" id="sendBtn">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
+  <!-- Chat Area -->
+  <div class="chat-container" id="chatContainer">
+    <div class="message ai-message">
+      <div class="prefix">Shiiro Bot</div>
+      <!-- VIDEO LANGSUNG DARI CATBOX — AUTOPLAY + BERSUARA -->
+      <video 
+        controls 
+        autoplay 
+        playsinline
+        src="https://files.catbox.moe/6sdcsk.mp4"
+        style="width:100%; max-height:360px; border-radius:12px; margin-bottom:16px; background:#000;">
+        Browser Anda tidak mendukung pemutaran video.
+      </video>
+      <!-- TEKS MENU DI BAWAH VIDEO -->
+      <div>
+        🇬🇧 ► Hello user ✨, welcome to Shiiro Bot, I'm here to assist you<br>
+        🇳🇴 ► Hei bruker ✨, velkommen til Shiiro Bot, jeg er her for å hjelpe deg<br><br>
+        ┏━━❍ 𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨 ✨<br>
+        ┣━❒ /ai <perintah><br>
+        ┣━❒ /developerbot<br>
+        ┣━❒ /ngl<br>
+        ┗━━━━━━━━━━━━━━━━━━━━<br><br>
+        𝗣𝗹𝗲𝗮𝘀𝗲 𝗰𝗵𝗼𝗼𝘀𝗲 𝗼𝗻𝗲 𝗼𝗳 𝘁𝗵𝗲 𝗳𝗼𝗹𝗹𝗼𝘄𝗶𝗻𝗴 𝗺𝗲𝗻𝘂 𝗼𝗽𝘁𝗶𝗼𝗻𝘀. 👻
+      </div>
     </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const messagesContainer = document.getElementById('messages');
-            const newChatBtn = document.getElementById('newChatBtn');
-            const newChatMenuBtn = document.getElementById('newChatMenuBtn');
-            const welcomeContainer = document.getElementById('welcomeContainer');
-            const menuToggle = document.getElementById('menuToggle');
-            const menuBtn = document.getElementById('menuBtn');
-            const menuContent = document.getElementById('menuContent');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const themeToggle = document.getElementById('themeToggle');
-            const changeApiKeyMenuBtn = document.getElementById('changeApiKeyMenuBtn');
-            
-            // Elemen untuk fitur API Key
-            const apiKeyModal = document.getElementById('apiKeyModal');
-            const apiKeyInput = document.getElementById('apiKeyInput');
-            const closeModal = document.getElementById('closeModal');
-            const cancelApiBtn = document.getElementById('cancelApiBtn');
-            const submitApiBtn = document.getElementById('submitApiBtn');
-            const forgotApiBtn = document.getElementById('forgotApiBtn');
-            const apiKeyStatusText = document.getElementById('apiKeyStatusText');
-            const changeApiKey = document.getElementById('changeApiKey');
-            
-            // API key default
-            const defaultApiKey = 'sk-uEco8C7Wk9RVnnf9jOcYDHPzLiEYCpaRN5tDM1pNYpmVlpf9';
-            
-            // State variables
-            let isDarkMode = true;
-            let currentChatId = null;
-            
-            // Tampilkan modal API key jika belum disimpan
-            if (!localStorage.getItem('shiiroApiKey')) {
-                setTimeout(() => {
-                    apiKeyModal.style.display = 'flex';
-                    apiKeyInput.value = defaultApiKey;
-                }, 1000);
-            } else {
-                updateApiKeyStatus();
+  <!-- Input -->
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Tulis pesanmu..." autocomplete="off" />
+    <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+
+  <script>
+    // CONFIG — OPENROUTER + QWEN
+    const DEFAULT_API_KEY = "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";
+    const API_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+
+    const YOUR_SITE_URL = window.location.href;
+    const YOUR_SITE_NAME = "Shiiro Bot by Fathan 8D"; // ✅ Nama diganti
+
+    // DOM
+    const chatContainer = document.getElementById('chatContainer');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuDropdown = document.getElementById('menuDropdown');
+    const themeToggle = document.getElementById('themeToggle');
+    const keyToggle = document.getElementById('keyToggle');
+    const creditBtn = document.getElementById('creditBtn');
+
+    // Toggle Menu
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+    });
+
+    // Theme Toggle
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      if (document.body.classList.contains('light-mode')) {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> Ubah ke Mode Gelap';
+      } else {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> Ubah ke Mode Terang';
+      }
+    });
+
+    // API Key Handler
+    keyToggle.addEventListener('click', async () => {
+      const savedKey = localStorage.getItem('apiKey') || DEFAULT_API_KEY;
+      const newKey = prompt("🔑 Masukkan OpenRouter API Key Baru:", savedKey);
+      if (newKey && newKey.trim()) {
+        localStorage.setItem('apiKey', newKey.trim());
+        showToast("✅ API Key berhasil diperbarui!");
+      } else {
+        if (confirm("Lupa API Key? Klik OK untuk salin default.")) {
+          try {
+            await navigator.clipboard.writeText(DEFAULT_API_KEY);
+            showToast("📋 Disalin ke clipboard!");
+          } catch (err) {
+            alert("Salin manual:\n" + DEFAULT_API_KEY);
+          }
+        }
+      }
+    });
+
+    // Navigate to credit.html
+    creditBtn.addEventListener('click', () => {
+      window.location.href = 'credit.html';
+    });
+
+    // Chat Functions
+    function addMessage(content, isUser = false) {
+      const div = document.createElement('div');
+      div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+      if (!isUser) {
+        // Untuk bot, izinkan HTML (video/iframe/teks)
+        div.innerHTML = `<div class="prefix">Shiiro Bot</div>${content}`;
+      } else {
+        // User hanya teks polos
+        div.textContent = content;
+      }
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTyping() {
+      const typing = document.createElement('div');
+      typing.className = 'typing';
+      typing.innerHTML = '<span></span><span></span><span></span>';
+      chatContainer.appendChild(typing);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return typing;
+    }
+
+    function hideTyping(typingElement) {
+      if (typingElement && typingElement.parentNode) {
+        typingElement.parentNode.removeChild(typingElement);
+      }
+    }
+
+    function showToast(message) {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
+          position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+          background: var(--accent); color: #000; padding: 12px 24px;
+          border-radius: 30px; font-weight: 600; z-index: 3000;
+          box-shadow: 0 4px 20px rgba(0, 212, 255, 0.5);
+          animation: slideUp 0.6s ease forwards;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.animation = 'none';
+      setTimeout(() => { toast.style.animation = 'slideUp 0.6s ease forwards'; }, 10);
+      setTimeout(() => { if (toast) toast.remove(); }, 3000);
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, true);
+      userInput.value = '';
+      const typing = showTyping();
+
+      try {
+        let replyContent = "";
+
+        if (text.startsWith("/ai ")) {
+          const query = text.slice(4).trim();
+          if (!query) {
+            replyContent = "❌ Silakan berikan pertanyaan setelah `/ai`.\nContoh: `/ai siapa presiden Indonesia pertama`";
+          } else {
+            // Forward to AI
+            const apiKey = localStorage.getItem('apiKey') || DEFAULT_API_KEY;
+            const res = await fetch(API_ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': YOUR_SITE_URL,
+                'X-Title': YOUR_SITE_NAME
+              },
+              body: JSON.stringify({
+                model: "qwen/qwen2.5-vl-72b-instruct:free",
+                messages: [
+                  {
+                    role: "system",
+                    content: "Kamu adalah Shiiro Bot — asisten cerdas yang dibuat oleh Fathan 8D. Jawab dengan santai, ramah, mendalam, dan membantu. Gunakan bahasa Indonesia natural."
+                  },
+                  {
+                    role: "user",
+                    content: query
+                  }
+                ],
+                temperature: 0.7,
+                max_tokens: 2000
+              })
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+              throw new Error(data.error.message || "Terjadi kesalahan pada API");
             }
-            
-            // Fungsi untuk menampilkan notifikasi
-            function showToast(message, isError = false) {
-                const toast = document.createElement('div');
-                toast.className = isError ? 'toast error' : 'toast';
-                toast.innerHTML = `
-                    <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
-                    ${message}
-                `;
-                
-                document.body.appendChild(toast);
-                
-                // Hapus toast setelah animasi selesai
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-            }
-            
-            // Update status API key
-            function updateApiKeyStatus() {
-                const savedApiKey = localStorage.getItem('shiiroApiKey');
-                if (savedApiKey) {
-                    apiKeyStatusText.textContent = 'Tersimpan';
-                } else {
-                    apiKeyStatusText.textContent = 'Belum diatur';
-                }
-            }
-            
-            // Event listener untuk tombol "Lupa API Key?"
-            forgotApiBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(defaultApiKey)
-                    .then(() => {
-                        showToast('API Key berhasil disalin ke clipboard!');
-                    })
-                    .catch(err => {
-                        showToast('Gagal menyalin API Key', true);
-                        console.error('Gagal menyalin API Key: ', err);
-                    });
-            });
-            
-            // Event listener untuk menyimpan API key
-            submitApiBtn.addEventListener('click', function() {
-                const apiKey = apiKeyInput.value.trim();
-                
-                if (apiKey) {
-                    localStorage.setItem('shiiroApiKey', apiKey);
-                    apiKeyModal.style.display = 'none';
-                    showToast('API Key berhasil disimpan!');
-                    updateApiKeyStatus();
-                } else {
-                    showToast('Silakan masukkan API Key', true);
-                }
-            });
-            
-            // Event listener untuk menutup modal
-            closeModal.addEventListener('click', function() {
-                apiKeyModal.style.display = 'none';
-            });
-            
-            cancelApiBtn.addEventListener('click', function() {
-                apiKeyModal.style.display = 'none';
-            });
-            
-            // Event listener untuk mengubah API key dari menu
-            changeApiKeyMenuBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                apiKeyInput.value = localStorage.getItem('shiiroApiKey') || '';
-                apiKeyModal.style.display = 'flex';
-                menuContent.classList.remove('show');
-            });
-            
-            // Event listener untuk mengubah API key dari status
-            changeApiKey.addEventListener('click', function() {
-                apiKeyInput.value = localStorage.getItem('shiiroApiKey') || '';
-                apiKeyModal.style.display = 'flex';
-            });
-            
-            // Tutup modal ketika klik di luar area modal
-            window.addEventListener('click', function(event) {
-                if (event.target === apiKeyModal) {
-                    apiKeyModal.style.display = 'none';
-                }
-            });
-            
-            // Auto-resize textarea
-            messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
-            
-            // Focus input on load
-            messageInput.focus();
-            
-            // Send message function
-            function sendMessage() {
-                const message = messageInput.value.trim();
-                if (!message) return;
-                
-                // Hide welcome container if visible
-                if (welcomeContainer.style.display !== 'none') {
-                    welcomeContainer.style.opacity = '0';
-                    setTimeout(() => {
-                        welcomeContainer.style.display = 'none';
-                    }, 300);
-                }
-                
-                // Add user message to chat
-                addMessage(message, 'user');
-                messageInput.value = '';
-                messageInput.style.height = 'auto';
-                
-                // Show typing animation
-                showTypingAnimation();
-                
-                // Send message to API
-                fetchAIResponse(message);
-            }
-            
-            // Add message to chat
-            function addMessage(content, sender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}-message`;
-                
-                const messageHeader = document.createElement('div');
-                messageHeader.className = 'message-header';
-                messageHeader.innerHTML = sender === 'ai' 
-                    ? '<i class="fas fa-robot"></i> Shiiro AI' 
-                    : '<i class="fas fa-user"></i> Anda';
-                
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content';
-                
-                // Process markdown-like formatting
-                let formattedContent = content
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/`(.*?)`/g, '<code>$1</code>');
-                
-                messageContent.innerHTML = formattedContent;
-                
-                const messageActions = document.createElement('div');
-                messageActions.className = 'message-actions';
-                messageActions.innerHTML = sender === 'ai' 
-                    ? '<button class="action-btn" title="Salin"><i class="fas fa-copy"></i></button><button class="action-btn" title="Suka"><i class="fas fa-thumbs-up"></i></button><button class="action-btn" title="Tidak Suka"><i class="fas fa-thumbs-down"></i></button>'
-                    : '<button class="action-btn" title="Salin"><i class="fas fa-copy"></i></button>';
-                
-                messageDiv.appendChild(messageHeader);
-                messageDiv.appendChild(messageContent);
-                messageDiv.appendChild(messageActions);
-                
-                messagesContainer.appendChild(messageDiv);
-                
-                // Add event listeners to action buttons
-                const copyBtn = messageActions.querySelector('.action-btn');
-                copyBtn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(content);
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-                    }, 2000);
-                });
-                
-                if (sender === 'ai') {
-                    const likeBtn = messageActions.querySelectorAll('.action-btn')[1];
-                    const dislikeBtn = messageActions.querySelectorAll('.action-btn')[2];
-                    
-                    likeBtn.addEventListener('click', () => {
-                        likeBtn.classList.toggle('liked');
-                        if (likeBtn.classList.contains('liked')) {
-                            dislikeBtn.classList.remove('disliked');
-                        }
-                    });
-                    
-                    dislikeBtn.addEventListener('click', () => {
-                        dislikeBtn.classList.toggle('disliked');
-                        if (dislikeBtn.classList.contains('disliked')) {
-                            likeBtn.classList.remove('liked');
-                        }
-                    });
-                }
-                
-                // Scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            // Show typing animation
-            function showTypingAnimation() {
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'message ai-message';
-                typingDiv.id = 'typingIndicator';
-                
-                const typingAnimation = document.createElement('div');
-                typingAnimation.className = 'typing-animation';
-                typingAnimation.innerHTML = '<span></span><span></span><span></span>';
-                
-                typingDiv.appendChild(typingAnimation);
-                messagesContainer.appendChild(typingDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            // Hide typing animation
-            function hideTypingAnimation() {
-                const typingIndicator = document.getElementById('typingIndicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
-            }
-            
-            // Fetch AI response
-            function fetchAIResponse(message) {
-                const savedApiKey = localStorage.getItem('shiiroApiKey') || defaultApiKey;
-                
-                // Tampilkan indikator mengetik
-                showTypingAnimation();
-                
-                // Set timeout untuk mencegah loading terlalu lama
-                const timeoutDuration = 10000; // 10 detik
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Timeout')), timeoutDuration)
-                );
-                
-                // Gunakan API yang benar
-                const apiPromise = fetch('https://api.chatanywhere.tech/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${savedApiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Anda adalah asisten AI yang membantu dengan pertanyaan coding, GitHub, dan topik teknis lainnya. Berikan jawaban yang singkat, jelas, dan langsung ke intinya.'
-                            },
-                            {
-                                role: 'user',
-                                content: message
-                            }
-                        ],
-                        max_tokens: 500,
-                        temperature: 0.7
-                    })
-                });
-                
-                // Gunakan Promise.race untuk timeout
-                Promise.race([apiPromise, timeoutPromise])
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    hideTypingAnimation();
-                    
-                    if (data.choices && data.choices.length > 0) {
-                        const response = data.choices[0].message.content;
-                        addMessage(response, 'ai');
-                    } else {
-                        addMessage('Maaf, saya mengalami masalah. Silakan coba lagi.', 'ai');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    hideTypingAnimation();
-                    
-                    // Fallback responses jika API error
-                    let response = '';
-                    
-                    if (message.toLowerCase().includes('python') || message.toLowerCase().includes('coding')) {
-                        response = "Untuk bantuan Python, saya sarankan menggunakan struktur data yang sesuai. Contoh kode Python sederhana:\n\n```python\ndef hello_world():\n    print(\"Hello, World!\")\n\nhello_world()\n```\n\nApakah ada aspek khusus Python yang ingin Anda pelajari?";
-                    } else if (message.toLowerCase().includes('github')) {
-                        response = "GitHub adalah platform hosting kode yang sangat powerful. Beberapa fitur utamanya:\n\n- **Repositories**: Tempat menyimpan proyek kode\n- **Branches**: Untuk mengembangkan fitur tanpa mengganggu kode utama\n- **Pull Requests**: Untuk mengusulkan dan mereview perubahan kode\n- **Actions**: Otomatisasi workflow CI/CD\n\nAda pertanyaan spesifik tentang GitHub?";
-                    } else if (message.toLowerCase().includes('bug') || message.toLowerCase().includes('error')) {
-                        response = "Untuk debugging, coba langkah-langkah berikut:\n\n1. Identifikasi gejala bug secara spesifik\n2. Periksa kode yang terkait\n3. Gunakan console.log atau debugger untuk melacak masalah\n4. Periksa dokumentasi atau sumber daya terkait\n5. Tes solusi yang mungkin\n\nBisakah Anda menjelaskan bug yang Anda hadapi lebih detail?";
-                    } else {
-                        response = "Terima kasih atas pesannya! Saya di sini untuk membantu Anda dengan pertanyaan coding, GitHub, dan topik teknis lainnya. Ada yang spesifik yang ingin Anda tanyakan?";
-                    }
-                    
-                    addMessage(response, 'ai');
-                });
-            }
-            
-            // Event listeners
-            sendBtn.addEventListener('click', sendMessage);
-            
-            messageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            newChatBtn.addEventListener('click', function() {
-                messagesContainer.innerHTML = '';
-                welcomeContainer.style.display = 'flex';
-                setTimeout(() => {
-                    welcomeContainer.style.opacity = '1';
-                }, 10);
-                messageInput.focus();
-            });
-            
-            newChatMenuBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                newChatBtn.click();
-                menuContent.classList.remove('show');
-            });
-            
-            menuBtn.addEventListener('click', function() {
-                menuContent.classList.toggle('show');
-            });
-            
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            });
-            
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-            
-            themeToggle.addEventListener('click', function() {
-                isDarkMode = !isDarkMode;
-                document.body.classList.toggle('light-mode', !isDarkMode);
-                themeToggle.innerHTML = isDarkMode 
-                    ? '<i class="fas fa-moon"></i>' 
-                    : '<i class="fas fa-sun"></i>';
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!menuBtn.contains(e.target) && !menuContent.contains(e.target)) {
-                    menuContent.classList.remove('show');
-                }
-            });
-            
-            // Add initial focus effect
-            messageInput.addEventListener('focus', function() {
-                this.parentElement.style.boxShadow = '0 -5px 15px rgba(0, 0, 0, 0.1)';
-            });
-            
-            messageInput.addEventListener('blur', function() {
-                this.parentElement.style.boxShadow = 'none';
-            });
+
+            replyContent = data.choices[0].message.content;
+          }
+        } else if (text === "/developerbot") {
+          replyContent = "👤 Dibuat oleh: <strong>Fathan 8D</strong>";
+        } else if (text === "/ngl") {
+          replyContent = `
+💌 Kirim saran atau pesan anonim untukku:<br>
+<a href="https://ngl.link/shiiro11661" target="_blank" style="color: var(--accent); text-decoration: underline;">https://ngl.link/shiiro11661</a><br><br>
+Silakan klik dan kasih saran untuk fitur selanjutnya !!!
+          `;
+        } else {
+          // Balasan default — video + teks menu
+          replyContent = `
+<video 
+  controls 
+  autoplay 
+  playsinline
+  src="https://files.catbox.moe/6sdcsk.mp4"
+  style="width:100%; max-height:300px; border-radius:12px; margin-bottom:16px; background:#000;">
+  Browser Anda tidak mendukung pemutaran video.
+</video>
+🇬🇧 ► Hello user ✨, welcome to Shiiro Bot, I'm here to assist you<br>
+🇳🇴 ► Hei bruker ✨, velkommen til Shiiro Bot, jeg er her for å hjelpe deg<br><br>
+┏━━❍ 𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨 ✨<br>
+┣━❒ /ai <perintah><br>
+┣━❒ /developerbot<br>
+┣━❒ /ngl<br>
+┗━━━━━━━━━━━━━━━━━━━━<br><br>
+𝗣𝗹𝗲𝗮𝘀𝗲 𝗰𝗵𝗼𝗼𝘀𝗲 𝗼𝗻𝗲 𝗼𝗳 𝘁𝗵𝗲 𝗳𝗼𝗹𝗹𝗼𝘄𝗶𝗻𝗴 𝗺𝗲𝗻𝘂 𝗼𝗽𝘁𝗶𝗼𝗻𝘀. 👻
+          `;
+        }
+
+        hideTyping(typing);
+        addMessage(replyContent);
+
+      } catch (err) {
+        hideTyping(typing);
+        addMessage(`❌ Error: ${err.message}`, false);
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Close menu
+    document.addEventListener('click', e => {
+      if (!menuToggle.contains(e.target) && !menuDropdown.contains(e.target)) {
+        menuToggle.classList.remove('active');
+      }
+    });
+
+    // Load saved API key
+    window.onload = () => {
+      const savedKey = localStorage.getItem('apiKey');
+      if (savedKey) console.log("🔑 OpenRouter API Key loaded");
+
+      // Coba play video otomatis saat halaman dimuat
+      const firstVideo = document.querySelector('.ai-message video');
+      if (firstVideo) {
+        firstVideo.play().catch(err => {
+          console.warn("Autoplay diblokir oleh browser. User harus interaksi dulu.");
+          // Opsional: Tambahkan tombol "Play" overlay jika mau — beri tahu jika butuh
         });
-    </script>
+      }
+    };
+  </script>
 </body>
 </html>
