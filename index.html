@@ -389,7 +389,7 @@
     // API Key Handler
     keyToggle.addEventListener('click', async () => {
       const savedKey = localStorage.getItem('apiKey') || DEFAULT_API_KEY;
-      const newKey = prompt("🔑 Masukkan ChatAnyWhere API Key Baru:", savedKey);
+      const newKey = prompt("🔑 Masukkan Api key Shiiro Ai:", savedKey);
       if (newKey && newKey.trim()) {
         localStorage.setItem('apiKey', newKey.trim());
         showToast("✅ API Key berhasil diperbarui!");
@@ -577,3 +577,4 @@ Silakan klik dan kasih saran untuk fitur selanjutnya !!!
   </script>
 </body>
 </html>
+
